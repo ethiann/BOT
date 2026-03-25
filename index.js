@@ -8,7 +8,7 @@ app.get('/', (req, res) => res.send('El bot está vivo'));
 app.listen(process.env.PORT || 3000, () => console.log('Servidor en línea'));
 
 // AQUÍ ES LA CIRUGÍA:
-const genAI = new GoogleGenerativeAI('TU_API_KEY_AQUI_PEGALA'); 
+const genAI = new GoogleGenerativeAI('AIzaSyAqRkjECIe0L1CdxOFUbxCYE2XGRiV6NhE'); 
 const modeloIA = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const client = new Client({
