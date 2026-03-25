@@ -7,13 +7,16 @@ const app = express();
 app.get('/', (req, res) => res.send('El bot está vivo'));
 app.listen(process.env.PORT || 3000, () => console.log('Servidor en línea'));
 
-// PEGA TU LLAVE AQUÍ ADENTRO DE LAS COMILLAS:
 const genAI = new GoogleGenerativeAI('AIzaSyAqrkjECIe0L1CdxOFUbxCYE2XGRiV6NhE');
 const modeloIA = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const client = new Client({
     authStrategy: new LocalAuth(),
-    puppeteer: { args: ['--no-sandbox', '--disable-setuid-sandbox'] }
+    authTimeoutMs: 120000, // Espera 2 minutos para conectar (clave para Render)
+    puppeteer: { 
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: '/usr/bin/google-chrome'
+    }
 });
 
 client.on('qr', (qr) => {
@@ -26,16 +29,13 @@ client.on('ready', () => {
 });
 
 client.on('message', async (msg) => {
-    if (msg.from.includes('@g.us')) return; // Ignora grupos para no gastar la API
-    
+    if (msg.from.includes('@g.us')) return;
     try {
-        const prompt = `Eres un asistente legal experto en leyes de México para la Asociación de Trabajadores. Responde de forma clara y profesional a esto: ${msg.body}`;
-        const result = await modeloIA.generateContent(prompt);
+        const result = await modeloIA.generateContent(msg.body);
         const response = await result.response;
         msg.reply(response.text());
     } catch (error) {
-        console.log('ERROR DE GEMINI:', error);
-        msg.reply('Lo siento, estoy teniendo un problema técnico. Inténtalo de nuevo en un momento.');
+        console.log('Error Gemini:', error);
     }
 });
 
