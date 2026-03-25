@@ -7,7 +7,7 @@ const app = express();
 app.get('/', (req, res) => res.send('El bot está vivo'));
 app.listen(process.env.PORT || 3000, () => console.log('Servidor en línea'));
 
-// AQUÍ ES LA CIRUGÍA:
+// PEGA TU LLAVE AQUÍ ADENTRO DE LAS COMILLAS:
 const genAI = new GoogleGenerativeAI('AIzaSyAqrkjECIe0L1CdxOFUbxCYE2XGRiV6NhE');
 const modeloIA = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -18,21 +18,24 @@ const client = new Client({
 
 client.on('qr', (qr) => {
     qrcode.generate(qr, { small: true });
-    console.log('ESCANEA ESTE QR CON EL CELULAR DE LA ASOCIACIÓN');
+    console.log('ESCANEA ESTE QR:');
 });
 
 client.on('ready', () => {
     console.log('¡ÉXITO! Bot conectado a WhatsApp.');
 });
 
-client.on('message', async message => {
+client.on('message', async (msg) => {
+    if (msg.from.includes('@g.us')) return; // Ignora grupos para no gastar la API
+    
     try {
-        const instruccion = "Eres el asistente legal de una asociación de trabajadores en México. Responde de forma amable, corta y precisa a lo siguiente: " + message.body;
-        const resultado = await modeloIA.generateContent(instruccion);
-        const respuestaBot = resultado.response.text();
-        message.reply(respuestaBot);
+        const prompt = `Eres un asistente legal experto en leyes de México para la Asociación de Trabajadores. Responde de forma clara y profesional a esto: ${msg.body}`;
+        const result = await modeloIA.generateContent(prompt);
+        const response = await result.response;
+        msg.reply(response.text());
     } catch (error) {
-        console.log('Hubo un error pensando la respuesta:', error);
+        console.log('ERROR DE GEMINI:', error);
+        msg.reply('Lo siento, estoy teniendo un problema técnico. Inténtalo de nuevo en un momento.');
     }
 });
 
