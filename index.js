@@ -1,3 +1,4 @@
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -8,7 +9,7 @@ app.get('/', (req, res) => res.send('El bot está vivo'));
 app.listen(process.env.PORT || 3000, () => console.log('Servidor en línea'));
 
 // AQUÍ ES LA CIRUGÍA:
-const genAI = new GoogleGenerativeAI('AIzaSyAqRkjECIe0L1CdxOFUbxCYE2XGRiV6NhE'); 
+const genAI = new GoogleGenerativeAI('AIzaSyAqrkjECIe0L1CdxOFUbxCYE2XGRiV6NhE');
 const modeloIA = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const client = new Client({
